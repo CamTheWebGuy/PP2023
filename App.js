@@ -9,6 +9,7 @@ import Login from './screens/Login';
 import SignUp from './screens/SignUp';
 import Dashboard from './screens/Dashboard';
 import Clients from './screens/Clients';
+import ClientInfo from './screens/ClientInfo';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -67,6 +68,16 @@ function HomeTabs() {
           tabBarIcon: ({ color, size }) => (
             <Ionicons name='cog-outline' color={color} size={size} />
           ),
+        }}
+      />
+
+      <Tab.Screen
+        name='clientInfo'
+        component={ClientInfo}
+        options={{
+          headerShown: false,
+          tabBarLabelPosition: 'below-icon',
+          tabBarButton: () => null,
         }}
       />
     </Tab.Navigator>

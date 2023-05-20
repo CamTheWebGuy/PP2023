@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import React, { useState } from 'react';
 import filter from 'lodash.filter';
+import { Ionicons } from '@expo/vector-icons';
 
 const Clients = ({ navigation }) => {
   const [query, setQuery] = useState('');
@@ -67,7 +68,6 @@ const Clients = ({ navigation }) => {
       formattedName.includes(query) ||
       formattedServiceAddress.includes(query)
     ) {
-      console.log(name);
       return true;
     }
 
@@ -77,7 +77,12 @@ const Clients = ({ navigation }) => {
   const ItemView = ({ item }) => {
     return (
       // Single Comes here which will be repeatative for the FlatListItems
-      <TouchableOpacity onPress={() => console.log('pressed')}>
+      <TouchableOpacity
+        onPress={() =>
+          navigation.navigate('clientInfo', {
+            item,
+          })
+        }>
         <Text style={styles.clientName}>{item.name}</Text>
         <Text style={styles.clientAddress}>{item.serviceAddress}</Text>
       </TouchableOpacity>
@@ -96,12 +101,17 @@ const Clients = ({ navigation }) => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.mainContainer}>
-        <TextInput
-          style={styles.search}
-          placeholder='Search Customers...'
-          value={query}
-          onChangeText={(queryText) => handleSearch(queryText)}
-        />
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <TextInput
+            style={styles.search}
+            placeholder='Search Customers...'
+            value={query}
+            onChangeText={(queryText) => handleSearch(queryText)}
+          />
+          <TouchableOpacity style={{ width: '5%', paddingLeft: 10 }}>
+            <Ionicons name='add-outline' color={'white'} size={40} />
+          </TouchableOpacity>
+        </View>
         <FlatList
           data={data}
           //data defined in constructor
@@ -142,5 +152,6 @@ const styles = StyleSheet.create({
     padding: 15,
     paddingLeft: 10,
     color: '#828B98',
+    flex: 1,
   },
 });
