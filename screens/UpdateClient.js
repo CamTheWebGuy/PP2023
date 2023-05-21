@@ -19,11 +19,22 @@ const UpdateClient = ({ route, navigation }) => {
   const [serviceAddress, setServiceAddress] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const clearState = () => {
+    setCustomerName('');
+    setServiceAddress('');
+  };
+
   const { mode } = route.params;
 
   const handleAdd = async () => {
     setLoading(true);
-    await addCustomer(customerName, serviceAddress);
+    await addCustomer(
+      customerName,
+      serviceAddress,
+      userInfo.id,
+      userInfo.user.type
+    );
+    clearState();
     setLoading(false);
   };
 

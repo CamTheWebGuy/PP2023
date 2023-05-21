@@ -14,6 +14,7 @@ import { logout } from '../api/firebaseMethods';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { addUserInfo } from '../redux/actions';
+import { checkNetworkConnectivity } from '../components/checkNetworkConnectivity';
 
 // Idea: Rather than storing userdata in state, I store it in redux. So that it can be accessed
 // across the app. This can be expanded in the future so that on initial sign in, the db is called,
@@ -31,16 +32,9 @@ const Dashboard = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (userInfo && userInfo.id) {
-      setLoading(false);
-    } else {
-      setLoading(true);
-    }
-  }, [userInfo]);
-
-  useEffect(() => {
     const fetchData = async () => {
-      if (auth.currentUser) {
+      const netCheck = await checkNetworkConnectivity();
+      if (auth.currentUser && netCheck) {
         try {
           const document = db.collection('users').doc(auth.currentUser.uid);
           const res = await document.get();
@@ -54,6 +48,14 @@ const Dashboard = ({ navigation }) => {
 
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (userInfo && userInfo.id) {
+      setLoading(false);
+    } else {
+      setLoading(true);
+    }
+  }, [userInfo]);
 
   return (
     <View>

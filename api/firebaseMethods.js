@@ -69,14 +69,26 @@ export async function logout() {
   auth.signOut();
 }
 
-export async function addCustomer(name, serviceAddress, owner, creator) {
+export async function addCustomer(
+  name,
+  serviceAddress,
+  signedInUser,
+  creatorType
+) {
   try {
-    const docRef = await db.collection('customers').add({
-      name,
-      serviceAddress,
-      owner: '123',
-      technician: '456',
-    });
+    if (creatorType === 'owner') {
+      const docRef = await db.collection('customers').add({
+        name,
+        serviceAddress,
+        owner: signedInUser,
+      });
+    } else {
+      const docRef = await db.collection('customers').add({
+        name,
+        serviceAddress,
+        owner,
+      });
+    }
   } catch (error) {
     alert(error.message);
   }

@@ -20,8 +20,10 @@ import { auth } from './firebase';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import UpdateClient from './screens/UpdateClient';
 
-import store from './redux/store';
+import { store, persistor } from './redux/store';
 import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+import MyAccount from './screens/MyAccount';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -75,7 +77,7 @@ function HomeTabs() {
 
       <Tab.Screen
         name='My Account'
-        component={Dashboard}
+        component={MyAccount}
         options={{
           headerShown: false,
           tabBarLabelPosition: 'below-icon',
@@ -122,33 +124,35 @@ export default function App() {
 
   return (
     <Provider store={store}>
-      <NavigationContainer>
-        <Stack.Navigator>
-          <Stack.Screen
-            name={'loading'}
-            component={Loading}
-            options={{ headerShown: false }}
-          />
+      <PersistGate loading={<Text>Loading...</Text>} persistor={persistor}>
+        <NavigationContainer>
+          <Stack.Navigator>
+            <Stack.Screen
+              name={'loading'}
+              component={Loading}
+              options={{ headerShown: false }}
+            />
 
-          <Stack.Screen
-            name={'login'}
-            component={Login}
-            options={{ headerShown: false }}
-          />
+            <Stack.Screen
+              name={'login'}
+              component={Login}
+              options={{ headerShown: false }}
+            />
 
-          <Stack.Screen
-            name={'signup'}
-            component={SignUp}
-            options={{ headerShown: false }}
-          />
+            <Stack.Screen
+              name={'signup'}
+              component={SignUp}
+              options={{ headerShown: false }}
+            />
 
-          <Stack.Screen
-            name={'dashboard'}
-            component={HomeTabs}
-            options={{ headerShown: false }}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
+            <Stack.Screen
+              name={'dashboard'}
+              component={HomeTabs}
+              options={{ headerShown: false }}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </PersistGate>
     </Provider>
   );
 }
