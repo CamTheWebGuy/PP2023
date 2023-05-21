@@ -12,20 +12,39 @@ import { auth, db } from '../firebase';
 
 import { logout } from '../api/firebaseMethods';
 
-const handlePress = () => {
-  logout();
-};
+import { useSelector, useDispatch } from 'react-redux';
+import { addUserInfo } from '../redux/actions';
+
+// Idea: Rather than storing userdata in state, I store it in redux. So that it can be accessed
+// across the app. This can be expanded in the future so that on initial sign in, the db is called,
+// user info and customers is saved to redux, saved to asyncStorage, and then can be redux can be
+// rehydrated. Meaning that all this information would remain available even if the app is offline
 
 const Dashboard = ({ navigation }) => {
+  const userInfo = useSelector((state) => state.userInfo[0]);
+
+  const dispatch = useDispatch();
+
+  const handlePress = () => {
+    logout();
+  };
   const [loading, setLoading] = useState(true);
-  const [userData, setUserData] = useState({});
+
+  useEffect(() => {
+    if (userInfo && userInfo.id) {
+      setLoading(false);
+    } else {
+      setLoading(true);
+    }
+  }, [userInfo]);
+
   useEffect(() => {
     const fetchData = async () => {
       if (auth.currentUser) {
         try {
           const document = db.collection('users').doc(auth.currentUser.uid);
           const res = await document.get();
-          setUserData(res.data());
+          await dispatch(addUserInfo(res.data(), auth.currentUser.uid));
           setLoading(false);
         } catch (error) {
           console.log('Error fetching user data:', error);
@@ -48,7 +67,7 @@ const Dashboard = ({ navigation }) => {
             <ScrollView style={styles.scrollContainer}>
               <Text style={styles.heading}>Welcome Back,</Text>
               <Text style={styles.name}>
-                {userData.firstName} {userData.lastName}!
+                {userInfo.user.firstName} {userInfo.user.lastName}!
               </Text>
               <TouchableOpacity
                 style={styles.primaryBtn}

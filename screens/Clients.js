@@ -108,7 +108,11 @@ const Clients = ({ navigation }) => {
             value={query}
             onChangeText={(queryText) => handleSearch(queryText)}
           />
-          <TouchableOpacity style={{ width: '5%', paddingLeft: 10 }}>
+          <TouchableOpacity
+            style={{ width: '5%', paddingLeft: 10 }}
+            onPress={() =>
+              navigation.navigate('updateClient', { mode: 'add' })
+            }>
             <Ionicons name='add-outline' color={'white'} size={40} />
           </TouchableOpacity>
         </View>

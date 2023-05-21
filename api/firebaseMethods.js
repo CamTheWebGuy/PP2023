@@ -27,15 +27,16 @@ import { Alert } from 'react-native';
 //   }
 // };
 
-export async function registration(email, password, lastName, firstName) {
+export async function registration(email, password, lastName, firstName, mode) {
   auth
     .createUserWithEmailAndPassword(email, password)
     .then((userCredentials) => {
       const user = userCredentials.user;
       db.collection('users').doc(userCredentials.user.uid).set({
         email,
-        lastName: lastName,
-        firstName: firstName,
+        lastName,
+        firstName,
+        type: mode,
       });
     })
     .catch((error) => alert(error.message));
@@ -66,4 +67,17 @@ export async function login(email, password) {
 
 export async function logout() {
   auth.signOut();
+}
+
+export async function addCustomer(name, serviceAddress, owner, creator) {
+  try {
+    const docRef = await db.collection('customers').add({
+      name,
+      serviceAddress,
+      owner: '123',
+      technician: '456',
+    });
+  } catch (error) {
+    alert(error.message);
+  }
 }

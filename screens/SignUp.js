@@ -21,6 +21,11 @@ const SignUp = ({ navigation }) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
+  // This determines if the created account is a Business Owner or Employee (technician).
+  // For right now this is hard coded, and Employee accounts will only be created via dashboard.
+  // the registration function is setup to take employee accounts though.
+  const mode = 'owner';
+
   const emptyState = () => {
     setFirstName('');
     setLastName('');
@@ -42,7 +47,7 @@ const SignUp = ({ navigation }) => {
     } else if (password !== confirmPassword) {
       Alert.alert('Password does not match!');
     } else {
-      registration(email, password, lastName, firstName);
+      registration(email, password, lastName, firstName, mode);
       navigation.navigate('loading');
       emptyState();
     }

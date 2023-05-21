@@ -18,6 +18,11 @@ import Loading from './screens/Loading';
 import { auth } from './firebase';
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import UpdateClient from './screens/UpdateClient';
+
+import store from './redux/store';
+import { Provider } from 'react-redux';
+
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -33,6 +38,9 @@ function HomeTabs() {
           tabBarIcon: ({ color, size }) => (
             <Ionicons name='home' color={color} size={size} />
           ),
+          tabBarInactiveBackgroundColor: '#162B46',
+          tabBarActiveBackgroundColor: '#162B46',
+          tabBarStyle: { borderTopColor: '#828B98', borderTopWidth: 0.1 },
         }}
       />
       <Tab.Screen
@@ -44,6 +52,9 @@ function HomeTabs() {
           tabBarIcon: ({ color, size }) => (
             <Ionicons name='people-outline' color={color} size={size} />
           ),
+          tabBarInactiveBackgroundColor: '#162B46',
+          tabBarActiveBackgroundColor: '#162B46',
+          tabBarStyle: { borderTopColor: '#828B98', borderTopWidth: 0.1 },
         }}
       />
 
@@ -56,6 +67,9 @@ function HomeTabs() {
           tabBarIcon: ({ color, size }) => (
             <Ionicons name='map-outline' color={color} size={size} />
           ),
+          tabBarInactiveBackgroundColor: '#162B46',
+          tabBarActiveBackgroundColor: '#162B46',
+          tabBarStyle: { borderTopColor: '#828B98', borderTopWidth: 0.1 },
         }}
       />
 
@@ -68,6 +82,9 @@ function HomeTabs() {
           tabBarIcon: ({ color, size }) => (
             <Ionicons name='cog-outline' color={color} size={size} />
           ),
+          tabBarInactiveBackgroundColor: '#162B46',
+          tabBarActiveBackgroundColor: '#162B46',
+          tabBarStyle: { borderTopColor: '#828B98', borderTopWidth: 0.1 },
         }}
       />
 
@@ -78,6 +95,22 @@ function HomeTabs() {
           headerShown: false,
           tabBarLabelPosition: 'below-icon',
           tabBarButton: () => null,
+          tabBarInactiveBackgroundColor: '#162B46',
+          tabBarActiveBackgroundColor: '#162B46',
+          tabBarStyle: { borderTopColor: '#828B98', borderTopWidth: 0.1 },
+        }}
+      />
+
+      <Tab.Screen
+        name='updateClient'
+        component={UpdateClient}
+        options={{
+          headerShown: false,
+          tabBarLabelPosition: 'below-icon',
+          tabBarButton: () => null,
+          tabBarInactiveBackgroundColor: '#162B46',
+          tabBarActiveBackgroundColor: '#162B46',
+          tabBarStyle: { borderTopColor: '#828B98', borderTopWidth: 0.1 },
         }}
       />
     </Tab.Navigator>
@@ -88,33 +121,35 @@ export default function App() {
   initializeApp(apiKeys.firebaseConfig);
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen
-          name={'loading'}
-          component={Loading}
-          options={{ headerShown: false }}
-        />
+    <Provider store={store}>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen
+            name={'loading'}
+            component={Loading}
+            options={{ headerShown: false }}
+          />
 
-        <Stack.Screen
-          name={'login'}
-          component={Login}
-          options={{ headerShown: false }}
-        />
+          <Stack.Screen
+            name={'login'}
+            component={Login}
+            options={{ headerShown: false }}
+          />
 
-        <Stack.Screen
-          name={'signup'}
-          component={SignUp}
-          options={{ headerShown: false }}
-        />
+          <Stack.Screen
+            name={'signup'}
+            component={SignUp}
+            options={{ headerShown: false }}
+          />
 
-        <Stack.Screen
-          name={'dashboard'}
-          component={HomeTabs}
-          options={{ headerShown: false }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+          <Stack.Screen
+            name={'dashboard'}
+            component={HomeTabs}
+            options={{ headerShown: false }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </Provider>
   );
 }
 
