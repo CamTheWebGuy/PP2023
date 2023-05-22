@@ -27,6 +27,54 @@ import { Alert } from 'react-native';
 //   }
 // };
 
+//https://us-central1-pp23-4a2f8.cloudfunctions.net/createUser
+
+export async function registerSubUser(email, password) {
+  const endpointURL =
+    'https://us-central1-pp23-4a2f8.cloudfunctions.net/createUser';
+
+  // Create the request body
+  const requestBody = {
+    data: {
+      email,
+      password,
+    },
+  };
+
+  // Get the authentication token for the current user
+  const idToken = await auth.currentUser.getIdToken();
+
+  // Make a POST request to the Cloud Functions endpoint
+  fetch(endpointURL, {
+    method: 'POST',
+    body: JSON.stringify(requestBody),
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${idToken}`,
+    },
+  })
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        throw new Error('Error creating user');
+      }
+    })
+    .then((data) => {
+      const uid = data.result.uid;
+      db.collection('users').doc(uid).set({
+        email,
+        lastName: 'Rose',
+        firstName: 'Ava',
+        type: 'employee',
+      });
+    })
+    .catch((error) => {
+      console.log('Error creating user:', error);
+      // Handle the error
+    });
+}
+
 export async function registration(email, password, lastName, firstName, mode) {
   auth
     .createUserWithEmailAndPassword(email, password)

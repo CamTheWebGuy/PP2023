@@ -7,14 +7,21 @@ import {
   FlatList,
 } from 'react-native';
 import React, { useState } from 'react';
+
 import { useSelector, useDispatch } from 'react-redux';
 import { updateUserEmail } from '../redux/actions';
+import { generate } from '@wcj/generate-password';
+import { registerSubUser } from '../api/firebaseMethods';
 
 const MyAccount = () => {
   const userInfo = useSelector((state) => state.userInfo[0]);
   const [email, setEmail] = useState(userInfo.user.email);
   const [firstName, setFirstName] = useState(userInfo.user.firstName);
   const [lastName, setLastName] = useState(userInfo.user.lastName);
+  const [showAddUserForm, setShowAddUserForm] = useState(false);
+  const [addUserEmail, setAddUserEmail] = useState('');
+  const [addUserPassword, setAddUserPassword] = useState('password');
+
   const [data, setData] = useState([
     {
       id: '1',
@@ -105,10 +112,26 @@ const MyAccount = () => {
       />
 
       <Text style={styles.heading}>Users</Text>
+
+      {showAddUserForm && (
+        <View>
+          <TextInput
+            style={styles.input}
+            placeholder='Email'
+            value={addUserEmail}
+            onChangeText={(e) => setAddUserEmail(e)}
+          />
+        </View>
+      )}
+
       <TouchableOpacity
         style={styles.primaryBtn}
-        onPress={() => console.log('pressed')}>
-        <Text>Add User</Text>
+        onPress={() =>
+          !showAddUserForm
+            ? setShowAddUserForm(!showAddUserForm)
+            : registerSubUser(addUserEmail, addUserPassword)
+        }>
+        <Text>{showAddUserForm ? 'Create User' : 'Add New User'}</Text>
       </TouchableOpacity>
 
       <FlatList

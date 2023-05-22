@@ -117,6 +117,7 @@ const Clients = ({ navigation }) => {
           </TouchableOpacity>
         </View>
         <FlatList
+          style={{ marginBottom: 30 }}
           data={data}
           //data defined in constructor
           ItemSeparatorComponent={ItemSeparatorView}

@@ -16,6 +16,7 @@
     "@react-navigation/bottom-tabs": "^6.5.7",
     "@react-navigation/native": "^6.1.6",
     "@react-navigation/stack": "^6.3.16",
+    "@wcj/generate-password": "^1.0.3",
     "expo": "~48.0.15",
     "expo-network": "~5.2.1",
     "expo-status-bar": "~1.4.4",
