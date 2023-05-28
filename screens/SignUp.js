@@ -21,9 +21,9 @@ const SignUp = ({ navigation }) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  // This determines if the created account is a Business Owner or Employee (technician).
-  // For right now this is hard coded, and Employee accounts will only be created via dashboard.
-  // the registration function is setup to take employee accounts though.
+  // Originally this switch was going to be used to determine if we were creating a
+  // employee account or a owner account but it ended up just being easier to write a
+  // custom function to create employee accounts.
   const mode = 'owner';
 
   const emptyState = () => {

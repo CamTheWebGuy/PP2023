@@ -10,10 +10,10 @@ import {
 import React, { useState, useEffect } from 'react';
 import { auth, db } from '../firebase';
 
-import { logout } from '../api/firebaseMethods';
+import { getCustomersFB, logout, getSubUsersFB } from '../api/firebaseMethods';
 
 import { useSelector, useDispatch } from 'react-redux';
-import { addUserInfo } from '../redux/actions';
+import { addUserInfo, getSubUsers, getCustomers } from '../redux/actions';
 import { checkNetworkConnectivity } from '../components/checkNetworkConnectivity';
 
 // Idea: Rather than storing userdata in state, I store it in redux. So that it can be accessed
@@ -39,6 +39,13 @@ const Dashboard = ({ navigation }) => {
           const document = db.collection('users').doc(auth.currentUser.uid);
           const res = await document.get();
           await dispatch(addUserInfo(res.data(), auth.currentUser.uid));
+
+          const subUsers = await getSubUsersFB();
+          await dispatch(getSubUsers(subUsers));
+
+          const customers = await getCustomersFB();
+          dispatch(getCustomers(customers));
+
           setLoading(false);
         } catch (error) {
           console.log('Error fetching user data:', error);

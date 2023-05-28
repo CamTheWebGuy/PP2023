@@ -29,7 +29,7 @@ import { Alert } from 'react-native';
 
 //https://us-central1-pp23-4a2f8.cloudfunctions.net/createUser
 
-export async function registerSubUser(email, password) {
+export async function registerSubUser(email, password, firstName, lastName) {
   const endpointURL =
     'https://us-central1-pp23-4a2f8.cloudfunctions.net/createUser';
 
@@ -45,7 +45,7 @@ export async function registerSubUser(email, password) {
   const idToken = await auth.currentUser.getIdToken();
 
   // Make a POST request to the Cloud Functions endpoint
-  fetch(endpointURL, {
+  await fetch(endpointURL, {
     method: 'POST',
     body: JSON.stringify(requestBody),
     headers: {
@@ -60,13 +60,14 @@ export async function registerSubUser(email, password) {
         throw new Error('Error creating user');
       }
     })
-    .then((data) => {
+    .then(async (data) => {
       const uid = data.result.uid;
-      db.collection('users').doc(uid).set({
+      await db.collection('users').doc(uid).set({
         email,
-        lastName: 'Rose',
-        firstName: 'Ava',
+        lastName,
+        firstName,
         type: 'employee',
+        owner: auth.currentUser.uid,
       });
     })
     .catch((error) => {
@@ -120,6 +121,9 @@ export async function logout() {
 export async function addCustomer(
   name,
   serviceAddress,
+  phone,
+  frequency,
+  day,
   signedInUser,
   creatorType
 ) {
@@ -129,6 +133,9 @@ export async function addCustomer(
         name,
         serviceAddress,
         owner: signedInUser,
+        phone,
+        frequency,
+        day,
       });
     } else {
       const docRef = await db.collection('customers').add({
@@ -137,6 +144,43 @@ export async function addCustomer(
         owner,
       });
     }
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+export async function getSubUsersFB() {
+  try {
+    const snapshot = await db
+      .collection('users')
+      .where('type', '==', 'employee')
+      .where('owner', '==', auth.currentUser.uid)
+      .get();
+
+    const employees = [];
+    snapshot.forEach((doc) => {
+      employees.push({ id: doc.id, ...doc.data() });
+    });
+
+    return employees;
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+export async function getCustomersFB() {
+  try {
+    const snapshot = await db
+      .collection('customers')
+      .where('owner', '==', auth.currentUser.uid)
+      .get();
+
+    const customers = [];
+    snapshot.forEach((doc) => {
+      customers.push({ id: doc.id, ...doc.data() });
+    });
+
+    return customers;
   } catch (error) {
     alert(error.message);
   }

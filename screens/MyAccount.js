@@ -9,18 +9,25 @@ import {
 import React, { useState } from 'react';
 
 import { useSelector, useDispatch } from 'react-redux';
-import { updateUserEmail } from '../redux/actions';
+import { updateUserEmail, getSubUsers } from '../redux/actions';
 import { generate } from '@wcj/generate-password';
-import { registerSubUser } from '../api/firebaseMethods';
+import { registerSubUser, getSubUsersFB } from '../api/firebaseMethods';
+import { ActivityIndicator } from 'react-native-web';
 
 const MyAccount = () => {
   const userInfo = useSelector((state) => state.userInfo[0]);
+  const subUsers = useSelector((state) => state.subUsers);
   const [email, setEmail] = useState(userInfo.user.email);
   const [firstName, setFirstName] = useState(userInfo.user.firstName);
   const [lastName, setLastName] = useState(userInfo.user.lastName);
   const [showAddUserForm, setShowAddUserForm] = useState(false);
   const [addUserEmail, setAddUserEmail] = useState('');
   const [addUserPassword, setAddUserPassword] = useState('password');
+  const [addUserFirstName, setAddUserFirstName] = useState('');
+  const [addUserLastName, setAddUserLastName] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  console.log(subUsers);
 
   const [data, setData] = useState([
     {
@@ -39,6 +46,27 @@ const MyAccount = () => {
 
   const dispatch = useDispatch();
 
+  const registerSubUserHandler = async () => {
+    setIsLoading(true);
+    await registerSubUser(
+      addUserEmail,
+      addUserPassword,
+      addUserFirstName,
+      addUserLastName
+    );
+
+    // If not online, update redux and save command to execute later
+
+    const subUsers = await getSubUsersFB();
+    dispatch(getSubUsers(subUsers));
+
+    setIsLoading(false);
+    setShowAddUserForm(false);
+    setAddUserEmail('');
+    setAddUserFirstName('');
+    setAddUserLastName('');
+  };
+
   const handleUpdateInfo = async () => {
     if (
       email === userInfo.user.email &&
@@ -54,7 +82,10 @@ const MyAccount = () => {
     return (
       // Single Comes here which will be repeatative for the FlatListItems
       <TouchableOpacity onPress={() => console.log('clicked')}>
-        <Text style={styles.clientName}>{item.name}</Text>
+        <Text style={styles.clientName}>
+          {item.firstName} {item.lastName}
+        </Text>
+        <Text style={styles.subEmail}>{item.email}</Text>
       </TouchableOpacity>
     );
   };
@@ -121,21 +152,45 @@ const MyAccount = () => {
             value={addUserEmail}
             onChangeText={(e) => setAddUserEmail(e)}
           />
+          <TextInput
+            style={styles.input}
+            placeholder='First Name'
+            value={addUserFirstName}
+            onChangeText={(e) => setAddUserFirstName(e)}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder='Last Name'
+            value={addUserLastName}
+            onChangeText={(e) => setAddUserLastName(e)}
+          />
         </View>
       )}
 
-      <TouchableOpacity
-        style={styles.primaryBtn}
-        onPress={() =>
-          !showAddUserForm
-            ? setShowAddUserForm(!showAddUserForm)
-            : registerSubUser(addUserEmail, addUserPassword)
-        }>
-        <Text>{showAddUserForm ? 'Create User' : 'Add New User'}</Text>
-      </TouchableOpacity>
+      {/* password is hard coded right now, but will update to generate a random pass and 
+        email it to the created user. */}
+
+      {/* Flow: New user created with random password.  */}
+      {!isLoading ? (
+        <TouchableOpacity
+          style={styles.primaryBtn}
+          onPress={() =>
+            !showAddUserForm
+              ? setShowAddUserForm(!showAddUserForm)
+              : registerSubUserHandler()
+          }>
+          <Text>{showAddUserForm ? 'Create User' : 'Add New User'}</Text>
+        </TouchableOpacity>
+      ) : (
+        <TouchableOpacity disabled style={styles.primaryBtn}>
+          <Text>
+            <ActivityIndicator />
+          </Text>
+        </TouchableOpacity>
+      )}
 
       <FlatList
-        data={data}
+        data={subUsers}
         renderItem={ItemView}
         ItemSeparatorComponent={ItemSeparatorView}
       />
@@ -173,9 +228,17 @@ const styles = StyleSheet.create({
   },
   clientName: {
     padding: 10,
+    paddingBottom: 0,
     fontSize: 18,
     height: 44,
     color: 'white',
     fontWeight: 'bold',
+  },
+  subEmail: {
+    color: 'white',
+    padding: 10,
+    paddingTop: 0,
+    marginTop: -5,
+    fontStyle: 'italic',
   },
 });

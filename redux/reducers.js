@@ -3,11 +3,15 @@ import {
   LOADING_FALSE,
   LOADING_TRUE,
   UPDATE_USER_EMAIL,
+  GET_SUB_USERS,
+  GET_CUSTOMERS,
 } from './actions';
 
 const initialState = {
   userInfo: [],
   loading: false,
+  subUsers: [],
+  customers: [],
 };
 
 const userReducer = (state = initialState, action) => {
@@ -41,6 +45,20 @@ const userReducer = (state = initialState, action) => {
       return {
         ...state,
         loading: false,
+      };
+    }
+    case GET_SUB_USERS: {
+      const { users } = action.payload;
+      return {
+        ...state,
+        subUsers: users,
+      };
+    }
+    case GET_CUSTOMERS: {
+      const { customers } = action.payload;
+      return {
+        ...state,
+        customers,
       };
     }
     default:

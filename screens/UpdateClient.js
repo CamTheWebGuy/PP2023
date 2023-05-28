@@ -10,18 +10,23 @@ import {
 import React, { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 
-import { addCustomer } from '../api/firebaseMethods';
-import { useSelector } from 'react-redux';
+import { addCustomer, getCustomersFB } from '../api/firebaseMethods';
+import { getCustomers } from '../redux/actions';
+import { useSelector, useDispatch } from 'react-redux';
 
 const UpdateClient = ({ route, navigation }) => {
   const userInfo = useSelector((state) => state.userInfo[0]);
   const [customerName, setCustomerName] = useState('');
   const [serviceAddress, setServiceAddress] = useState('');
+  const [customerPhone, setCustomerPhone] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const dispatch = useDispatch();
 
   const clearState = () => {
     setCustomerName('');
     setServiceAddress('');
+    setCustomerPhone('');
   };
 
   const { mode } = route.params;
@@ -31,11 +36,19 @@ const UpdateClient = ({ route, navigation }) => {
     await addCustomer(
       customerName,
       serviceAddress,
+      customerPhone,
+      'Weekly',
+      'Monday',
       userInfo.id,
       userInfo.user.type
     );
+
+    const customers = await getCustomersFB();
+    await dispatch(getCustomers(customers));
+
     clearState();
     setLoading(false);
+    navigation.navigate('Client List');
   };
 
   return (
@@ -69,6 +82,12 @@ const UpdateClient = ({ route, navigation }) => {
             onChangeText={(text) => setServiceAddress(text)}
             style={styles.input}
             placeholder='Service Address'
+          />
+          <TextInput
+            value={customerPhone}
+            onChangeText={(text) => setCustomerPhone(text)}
+            style={styles.input}
+            placeholder='Customer Phone'
           />
           <TouchableOpacity
             style={styles.primaryBtn}

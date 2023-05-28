@@ -7,49 +7,23 @@ import {
   TouchableOpacity,
   TextInput,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import filter from 'lodash.filter';
 import { Ionicons } from '@expo/vector-icons';
+import { useSelector } from 'react-redux';
 
 const Clients = ({ navigation }) => {
+  const customers = useSelector((state) => state.customers);
   const [query, setQuery] = useState('');
   const [error, setError] = useState(null);
 
-  const [data, setData] = useState([
-    {
-      id: '1',
-      name: 'Dennis White',
-      serviceAddress: '3654 Preston Rd',
-    },
-    {
-      id: '2',
-      name: 'Vicki Welch',
-      serviceAddress: '5263 Pecan Acres Ln',
-    },
-    {
-      id: '3',
-      name: 'Glen Parker',
-      serviceAddress: '9238 W Dallas St',
-    },
-  ]);
+  const [data, setData] = useState(customers);
+  const [fullData, setFullData] = useState(customers);
 
-  const [fullData, setFullData] = useState([
-    {
-      id: '1',
-      name: 'Dennis White',
-      serviceAddress: '3654 Preston Rd',
-    },
-    {
-      id: '2',
-      name: 'Vicki Welch',
-      serviceAddress: '5263 Pecan Acres Ln',
-    },
-    {
-      id: '3',
-      name: 'Glen Parker',
-      serviceAddress: '9238 W Dallas St',
-    },
-  ]);
+  useEffect(() => {
+    setFullData(customers);
+    setData(customers);
+  }, [customers]);
 
   const handleSearch = (text) => {
     const formattedQuery = text.toLowerCase();
